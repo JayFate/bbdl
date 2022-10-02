@@ -1,63 +1,80 @@
-const qs = require("querystring");
-const axios = require("axios").default;
+const path = require("path");
+const fs = require("fs-extra");
+const { exec } = require("child_process");
 
-module.exports = class DouyinVideo {
-  constructor(url) {
-    this._sharedLink = url;
-  }
+const DouyinVideo = require("./douyinVideo.js");
 
-  async _getVideoID() {
-    let res = await axios.get(this._sharedLink);
-    let id = /\/(\d*)\//.exec(res.request.path)[1];
-    return id;
-  }
+const moveFile = (filename) => {
+  let cwd = process.cwd();
+  // 【五五开】穷开挂
+  const ext = ".mp4";
+  filename = filename.replace(ext, "") + ext;
+  const newName = filename.replace(/【|】/gm, "-").replace(/^-/, "");
+  const origin = path.resolve(cwd, filename);
+  const fullpath = path.resolve(cwd, newName);
+  // console.log(`origin`, origin);
+  // console.log(`fullpath`, fullpath);
+  fs.ensureFileSync(fullpath);
+  if (origin === fullpath) return;
+  fs.move(origin, fullpath, { overwrite: true }, (err) => {
+    if (err) console.log(`err111`, err);
+  });
+};
 
-  async _getVideoInfo() {
-    let res = await axios.get(
-      `https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=${this.videoID}`
-    );
-    return res.data.item_list[0];
-  }
+let counter = 0;
+let len = 0;
+const dlDouyin = async (url) => {
+  let video = new DouyinVideo(url);
+  await video.parse();
+  const outputName = `${video.videoTitle}.mp4`;
 
-  async parse() {
-    this.videoID = await this._getVideoID();
-    this._videoInfo = await this._getVideoInfo();
-    this.videoTitle = this._videoInfo.cha_list
-      ? this._videoInfo.cha_list[0].cha_name
-      : "";
-    this.videoDesc = this._videoInfo.desc;
-    this.videoDuration = this._videoInfo.duration;
-    this.bgMusicUrl = this._videoInfo.music?.play_url.uri;
-    this.videoCoverUrl = this._videoInfo.video.origin_cover.url_list[0];
-    this.videoHeight = this._videoInfo.video.height;
-    this.videoWidth = this._videoInfo.video.width;
-    this.videoUrl = this._videoInfo.video.play_addr.url_list[0];
-    this.videoNoWaterMaskUrl = this.videoUrl.replace("/playwm/", "/play/");
-  }
+  let file = fs.createWriteStream(outputName);
+  let data = await video.downloadVideo();
+  data.pipe(file);
+  moveFile(outputName);
+  console.log(`finashed ${++counter}/${len}`);
+};
 
-  async _download(url) {
-    let res = await axios.get(url, {
-      responseType: "stream",
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-      },
+const binaryPath = path.resolve(
+  __dirname,
+  "../files/",
+  process.platform,
+  "BBDown"
+);
+
+const dlBiliBili = async (url) => {
+  const cmd = `${binaryPath} ${url}`;
+  // console.log(cmd);
+  return new Promise((resolve, reject) => {
+    exec(cmd, {}, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec cmd error: ${error}`);
+        reject(error);
+        return;
+      }
+      const filename = stdout.replace(/[^]+视频标题: (.+)[^]+/, "$1");
+      moveFile(filename);
+      resolve("success");
+      console.log(`finashed ${++counter}/${len}`);
     });
-    return res.data;
-  }
+  });
+};
 
-  async downloadVideo() {
-    let res = await this._download(this.videoNoWaterMaskUrl);
-    return res;
-  }
+const download = async (urls) => {
+  len = urls.length;
+  const biliUrls = [];
+  const dyUrls = [];
+  urls.forEach((url) => {
+    if (url.match(/bilibili\.com/)) biliUrls.push(url);
+    if (url.match(/douyin\.com/)) dyUrls.push(url);
+  });
 
-  async downloadAudio() {
-    let res = await this._download(this.bgMusicUrl);
-    return res;
-  }
+  biliUrls.forEach(dlBiliBili);
+  dyUrls.forEach(dlDouyin);
+};
 
-  async downloadCover() {
-    let res = await this._download(this.videoCoverUrl);
-    return res;
-  }
+module.exports = {
+  dlBiliBili,
+  dlDouyin,
+  download,
 };
