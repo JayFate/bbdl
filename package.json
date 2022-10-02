@@ -1,0 +1,25 @@
+{
+  "name": "bbdl",
+  "version": "0.0.1",
+  "description": "A BiliBili cli downloader",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "bin": {
+    "bbd": "bin/index.js"
+  },
+  "keywords": [
+    "BiliBili",
+    "download",
+    "video"
+  ],
+  "author": "JayFate",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "commander": "^9.4.0",
+    "fs-extra": "^10.1.0",
+    "yt-dlp-wrap": "^2.3.11"
+  }
+}

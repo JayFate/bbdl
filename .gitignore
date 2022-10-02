@@ -1,0 +1,9 @@
+node_modules
+local
+videos
+zips
+
+package-lock.json
+bbdl
+test.*
+log.txt
