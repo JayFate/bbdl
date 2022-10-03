@@ -14,7 +14,6 @@ process.chdir(targetPath);
 cwd = process.cwd();
 
 console.log(`输出目录为: ${cwd}`);
-console.log("正在下载，请稍后...");
 
 const urls = process.argv.slice(2);
 download(urls)
