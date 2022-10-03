@@ -9,6 +9,11 @@
   "bin": {
     "bbd": "bin/index.js"
   },
+  "files": [
+    "src/*",
+    "files/*",
+    "bin/*"
+  ],
   "keywords": [
     "BiliBili",
     "DouYin",
