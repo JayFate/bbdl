@@ -7,3 +7,4 @@ package-lock.json
 bbdl
 test.*
 log.txt
+*.tgz

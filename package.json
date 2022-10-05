@@ -1,6 +1,6 @@
 {
   "name": "bbdl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A BiliBili & DouYin cli downloader",
   "main": "src/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "BiliBili",
     "DouYin",
     "download",
-    "video"
+    "youtube"
   ],
   "author": "JayFate",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "axios": "^0.27.2",
     "cli-progress": "^3.11.2",
     "commander": "^9.4.0",
-    "fs-extra": "^10.1.0"
+    "fs-extra": "^10.1.0",
+    "glob": "^8.0.3"
   }
 }

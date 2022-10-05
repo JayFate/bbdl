@@ -1,6 +1,8 @@
 # bbdl
 
-命令行视频下载工具，同时支持哔哩哔哩和抖音视频下载。
+命令行视频下载工具，同时支持哔哩哔哩, 抖音, YouTube, P站视频下载。
+
+下载外网视频请自备科学上网环境。
 
 ### 安装
 
@@ -13,7 +15,7 @@ npm install -g bbdl
 ### 使用
 
 ```sh
-bbd https://www.bilibili.com/video/BV12W411j7cH https://www.bilibili.com/video/BV1FW411q7Js https://v.douyin.com/6LsgKwJ/ https://v.douyin.com/68bshhx
+bbd https://www.bilibili.com/video/BV12W411j7cH https://v.douyin.com/6oSqeNY/ https://www.pornhub.com/view_video.php?viewkey=ph613c8cc6203e8
 ```
 
 视频下载后保存在 `<cwd>/bbdl` 目录
